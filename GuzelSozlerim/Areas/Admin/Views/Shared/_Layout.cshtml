@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-md-3">
+        <h2 class="mb-4">Administration</h2>
+
+        @*https://getbootstrap.com/docs/4.6/components/navs/*@
+        <div class="nav nav-pills flex-column">
+            <a asp-controller="Dashboard" asp-action="Index" class="nav-link @Active("Dashboard")">Dashboard</a>
+            <a asp-controller="GuzelSozler" asp-action="Index" class="nav-link @Active("GuzelSozler")">Güzel Sözler</a>
+        </div>
+    </div>
+    <div class="col-md-9">
+        @RenderBody()
+    </div>
+</div>
+
+@section scripts{ 
+    @await RenderSectionAsync("Scripts",false)
+}
+@{ 
+    string Active(string controllerName)
+    {
+        if (controllerName == ViewContext.RouteData.Values["controller"].ToString())
+        {
+            return "active";
+        }
+        return null;
+    }
+}

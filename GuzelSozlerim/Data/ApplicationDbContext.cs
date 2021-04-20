@@ -12,5 +12,6 @@ namespace GuzelSozlerim.Data
             : base(options)
         {
         }
+        public DbSet<GuzelSoz> GuzelSozler { get; set; }
     }
 }
