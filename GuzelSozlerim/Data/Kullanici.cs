@@ -11,5 +11,6 @@ namespace GuzelSozlerim.Data
     {
         [Required]
         public string GorunenAd { get; set; }
+        public List<KullaniciSoz> BegendigiSozler { get; set; }
     }
 }
