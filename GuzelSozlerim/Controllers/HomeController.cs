@@ -1,11 +1,15 @@
 ﻿using GuzelSozlerim.Data;
+using GuzelSozlerim.Extensions;
 using GuzelSozlerim.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace GuzelSozlerim.Controllers
@@ -23,7 +27,44 @@ namespace GuzelSozlerim.Controllers
 
         public IActionResult Index()
         {
-            return View(_dbContext.GuzelSozler.ToList());
+            return View(_dbContext.GuzelSozler.Include(x=>x.Begenenler).ToList());
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult BegeniDurumuGuncelle(int id, bool begenildiMi)
+        {
+            //string userId = User.FindFirstValue(ClaimTypes.NameIdentifier); metodlaştırdık. bkz: extensions
+            try
+            {
+                string userId = User.GetUserId();
+                var kullaniciSoz = new KullaniciSoz()
+                {
+                    GuzelSozId = id,
+                    KullaniciId = userId
+                };
+                if (begenildiMi)
+                {
+                    if (!_dbContext.KullaniciSozler.Contains(kullaniciSoz))
+                    {
+                        _dbContext.Add(kullaniciSoz);
+                    }
+                }
+                else
+                {
+                    if (_dbContext.KullaniciSozler.Contains(kullaniciSoz))
+                    {
+                        _dbContext.KullaniciSozler.Remove(kullaniciSoz);
+                    }
+                }
+                _dbContext.SaveChanges();
+                return new EmptyResult();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            
         }
 
         public IActionResult Privacy()

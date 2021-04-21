@@ -4,15 +4,80 @@
 }
 
 <div>
-    <h1>Güzel Sözler</h1>
-    <label>
-        Sadece beğendiklerimi Göster
-        <input type="checkbox" value="" />
-    </label>
-    <ul>
+    <div class="d-flex align-items-end mt-4">
+        <h1>Güzel Sözler</h1>
+
+        <label class="ml-auto">
+            Sadece beğendiklerimi Göster
+            <input type="checkbox" value="" />
+        </label>
+    </div>
+    <div>
         @foreach (var item in Model)
         {
-        <li>@item.Soz (Toplam Beğeni Sayısı: xxx) ❤</li>
+            bool begenildi = User.Identity.IsAuthenticated && item.Begenenler.Any(x => x.KullaniciId == User.GetUserId());
+            <div class="card mb-3">
+                <div class="card-body d-flex align-items-center">
+                    <div>
+                        <p class="mb-1">
+                            @item.Soz
+                        </p>
+                        <div class="small text-secondary">
+                            <span data-begeni-adet-id="@item.Id">@item.Begenenler.Count</span> kişi bunu beğendi.
+                        </div>
+                    </div>
+                    <a href="" class="btn btn-outline-danger ml-auto" data-begen-id="@item.Id" title="@BegenTitle(begenildi)" data-toggle="tooltip" data-begenildi="@begenildi.ToString().ToLower()">
+                        <i class="@(begenildi ? "fas" : "far" ) fa-heart"></i>
+                    </a>
+                </div>
+            </div>
         }
-    </ul>
+    </div>
 </div>
+@section scripts{
+    <script>
+        $('[data-toggle="tooltip"]').tooltip();
+        var girisYapildi = @User.Identity.IsAuthenticated.ToString().ToLower();
+
+        if (girisYapildi) {
+            $("[data-begen-id]").click(function (event) {
+                event.preventDefault();
+                var a = this;
+                var id = $(a).data("begen-id");
+                var begenildiMi = $(a).data("begenildi") ? false : true;
+                var spanBegeniAdet = $('span[data-begeni-adet-id="' + id + '"]');
+                var begeniAdet = Number(spanBegeniAdet.text());
+                $.ajax({
+                    type: "post",
+                    url: "@Url.Action("BegeniDurumuGuncelle","Home")",
+                    data: { id: id, begenildiMi: begenildiMi },
+                    success: function (data) {
+                        $(a).data("begenildi", begenildiMi);
+                        if (begenildiMi) {
+                            $(a).children("i").first().removeClass("far").addClass("fas");
+                            $(a).attr("title", "Beğeniyi Kaldır");
+                            spanBegeniAdet.text(begeniAdet + 1);
+                        }
+                        else {
+                            $(a).children("i").first().addClass("far").removeClass("fas");
+                            $(a).attr("title", "Beğen");
+                            spanBegeniAdet.text(begeniAdet - 1);
+                        }
+                        $(a).tooltip("dispose");
+                        $(a).tooltip();
+                    }
+                });
+            });
+        }
+    </script>
+}
+@{
+    string BegenTitle(bool begenildiMi = false)
+    {
+        if (!User.Identity.IsAuthenticated)
+        {
+            return "Beğenmek için giriş yapmanız gerekmektedir.";
+        }
+        return begenildiMi ? "Beğeniyi Kaldır" : "Beğen";
+    }
+}
