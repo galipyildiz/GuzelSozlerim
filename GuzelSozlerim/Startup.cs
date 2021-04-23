@@ -1,4 +1,4 @@
-using GuzelSozlerim.Data;
+ using GuzelSozlerim.Data;
 using GuzelSozlerim.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,9 +33,9 @@ namespace GuzelSozlerim
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<Kullanici>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddRoles<IdentityRole>()//claims factory eklediðimiz için rolemanager istiyor onun için ekledik.
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddDefaultIdentity<Kullanici>(options => options.SignIn.RequireConfirmedAccount = false)//IdentityUser yerine kullanici kullancam
+                .AddRoles<IdentityRole>()//claims factory eklediðimiz için rolemanager istiyor onun için ekledik.//IdentityRole kullancam
+                .AddEntityFrameworkStores<ApplicationDbContext>()//nereye kaydedeyim.
                 .AddClaimsPrincipalFactory<KullaniciClaimsPrincipalFactory>();//cookiye  gorunen ad yazýlmasý için
             services.AddControllersWithViews();
         }

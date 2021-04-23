@@ -27,7 +27,7 @@ namespace GuzelSozlerim.Controllers
 
         public IActionResult Index()
         {
-            return View(_dbContext.GuzelSozler.Include(x=>x.Begenenler).ToList());
+            return View(_dbContext.GuzelSozler.Include("Begenenler.Kullanici").ToList());
         }
 
         [Authorize]

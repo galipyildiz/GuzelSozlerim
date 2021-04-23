@@ -16,6 +16,7 @@
         @foreach (var item in Model)
         {
             bool begenildi = User.Identity.IsAuthenticated && item.Begenenler.Any(x => x.KullaniciId == User.GetUserId());
+            string begenenler = string.Join(", ", item.Begenenler.Select(x => x.Kullanici.GorunenAd));
             <div class="card mb-3 @(begenildi ? "card-begenildi" : "card-begenilmedi" )">
                 <div class="card-body d-flex align-items-center">
                     <div>
@@ -23,7 +24,10 @@
                             @item.Soz
                         </p>
                         <div class="small text-secondary">
-                            <span data-begeni-adet-id="@item.Id">@item.Begenenler.Count</span> kişi bunu beğendi.
+                            <a href="#" data-html="true" data-toggle="tooltip" data-placement="bottom" title="@begenenler">
+                                <span data-begeni-adet-id="@item.Id">@item.Begenenler.Count</span>
+                                kişi
+                            </a> bunu beğendi.
                         </div>
                     </div>
                     <a href="" class="btn btn-outline-danger ml-auto" data-begen-id="@item.Id" title="@BegenTitle(begenildi)" data-toggle="tooltip" data-begenildi="@begenildi.ToString().ToLower()">
@@ -81,7 +85,7 @@
             });
         }
 
-     
+
 
     </script>
 }
